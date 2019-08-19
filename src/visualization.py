@@ -3,8 +3,7 @@ import pandas as pd
 import colorlover as cl
 import plotly.graph_objects as go
 
-def update_colors_map(colors_map, values):
-    return dict([(label, colors_map[parent]) for label, parent in values[values.columns[:2][::-1]].values])
+from labeler import *
 
 def get_colors(parent_colors_map, values):
     
@@ -18,7 +17,7 @@ def get_colors(parent_colors_map, values):
         
         current_colors_map = cl.scales[str(n_colors)]['seq'][color]
         if n_values < 3:
-        	current_colors_map = current_colors_map[-n_values:]
+            current_colors_map = current_colors_map[-n_values:]
         if n_values > 9: 
             current_colors_map = cl.interp(current_colors_map, n_values)
         
@@ -28,20 +27,7 @@ def get_colors(parent_colors_map, values):
         
     return colors_map
 
-def replace_nan_label(articles, parent_name, level_name, parent_labels_map, level_labels_map):
-    
-    flags = pd.isnull(articles[level_name])
-    begin_index = max(0, articles[level_name].max() + 1)
-    
-    articles.loc[flags, level_name] = begin_index + articles[flags][parent_name]
-    articles[level_name] = articles[level_name].astype(int)
-
-    level_parent_map = dict(articles[flags][[level_name, parent_name]].drop_duplicates().values)
-    
-    for level, parent in level_parent_map.items():
-        level_labels_map[level] = parent_labels_map[parent] + ' (' + level_name + ')'
-
-def generate_values_for_visualization(articles, levels_name, labels_maps, colors_map):
+def generate_values_for_visualization(articles, levels_name, labels_maps):
     
     #initialisation
     values = [articles.id.count()]
@@ -57,12 +43,17 @@ def generate_values_for_visualization(articles, levels_name, labels_maps, colors
     parents += len(current_values)*['Темы']
     colors += cl.scales['9']['qual']['Paired']
 
+    colors_map = ['Blues', 'Blues', 'Greens', 'Greens', 'Reds', 'Reds', 'Oranges', 'Oranges', 'Purples']
+    colors_map = dict(zip(labels_maps[0].keys(), colors_map))
+
     #other levels
     for parent_index, (parent_name, level_name) in enumerate(zip(levels_name[:-1], levels_name[1:])):
 
         level_index = parent_index + 1
 
-        replace_nan_label(articles, parent_name, level_name, labels_maps[parent_index], labels_maps[level_index])
+        articles[level_name], level_labels_map = replace_nan_label(articles[parent_name], articles[level_name], labels_maps[parent_index])
+        labels_maps[level_index].update(level_labels_map)
+
         current_values = articles.groupby([parent_name, level_name]).id.count().to_frame('value').reset_index()
 
         values += current_values.value.tolist()
@@ -72,17 +63,18 @@ def generate_values_for_visualization(articles, levels_name, labels_maps, colors
         current_colors = get_colors(colors_map, current_values)
         colors += [current_colors[index] for index in current_values[level_name]]
 
-        colors_map = update_colors_map(colors_map, current_values)
+        colors_map = dict([(label, colors_map[parent]) 
+        					for label, parent in current_values[current_values.columns[:2][::-1]].values])
     
     return labels, parents, values, colors
     
 
-def levels_visualization(articles, levels_name, labels_maps, colors_map):
+def levels_visualization(articles, levels_name, labels_maps):
     
     articles = articles.copy()
     labels_maps = labels_maps.copy()
     
-    labels, parents, values, colors = generate_values_for_visualization(articles, levels_name, labels_maps, colors_map)
+    labels, parents, values, colors = generate_values_for_visualization(articles, levels_name, labels_maps)
     
     trace = go.Sunburst(labels=labels, parents=parents, values=values,
                         maxdepth = 2, branchvalues="total", 
