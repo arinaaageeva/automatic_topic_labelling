@@ -1,7 +1,6 @@
 import re
 
 from typing import List
-from dataclasses import dataclass
 from rusenttokenize import ru_sent_tokenize
 from spacy.lang.ru import Russian
 from spacy_russian_tokenizer import RussianTokenizer, MERGE_PATTERNS, SYNTAGRUS_RARE_CASES
@@ -9,27 +8,46 @@ from pyaspeller import Word, YandexSpeller
 from transliterate import translit
 from rnnmorph.predictor import RNNMorphPredictor
 from ufal.udpipe import Model, Pipeline, ProcessingError
+from collections import Counter
+from functools import reduce
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
-@dataclass
 class Token:
-    token_id: int
-    form: str
-    lemma: str = None
-    upos: str = None
-    xpos: str = None
-    feats: str = None
-    head: int = None
-    deprel: str = None
-    deps: str = None
-    space: bool = None
+    
+    def __init__(self, \
+                 token_id: int, \
+                 form: str, \
+                 lemma: str = None, \
+                 upos: str = None, \
+                 xpos: str = None, \
+                 feats: str = None, \
+                 head: int = None, \
+                 deprel: str = None, \
+                 deps: str = None, \
+                 space: bool = None):
+        
+        self.token_id = token_id
+        self.form = form
+        self.lemma = lemma
+        self.upos = upos
+        self.xpos = xpos
+        self.feats = feats
+        self.head = head
+        self.deprel = deprel
+        self.deps = deps
+        self.space = space
 
-@dataclass
 class Sentence:
-    sent_id: int
-    text: str
-    tokens: List[Token] = None
+    
+    def __init__(self, \
+                 sent_id: int, \
+                 text: str, \
+                 tokens: List[Token] = None):
+        
+        self.sent_id = sent_id
+        self.text = text
+        self.tokens = tokens
     
 class ReplaceChars(BaseEstimator, TransformerMixin):
     
@@ -209,6 +227,24 @@ class MorphPredictor(BaseEstimator, TransformerMixin):
     def transform(self, X):
         return [self.predict(x) for x in X]
     
+class MorphFilter(BaseEstimator, TransformerMixin):
+    
+    def __init__(self, upos_set=set()):
+        self.upos_set = upos_set
+        
+    def fit(self, X, y=None):
+        return self
+    
+    def sent_filtration(self, sent):
+        sent.tokens = [token for token in sent.tokens if token.upos in self.upos_set]
+        return sent
+    
+    def filtration(self, x):
+        return [self.sent_filtration(sent) for sent in x]
+    
+    def transform(self, X):
+        return [self.filtration(x) for x in X] 
+    
 class SyntaxParser(BaseEstimator, TransformerMixin):
     
     def __init__(self, model_path):
@@ -290,7 +326,23 @@ class  CoNLLUFormatDecoder(BaseEstimator, TransformerMixin):
         return Sentence(sent_id, text, tokens)
     
     def decode(self, x):
-        return [self.sent_decode(sent) for sent in x.split('\n\n')]
+        return [self.sent_decode(sent) for sent in x.strip().split('\n\n')]
     
     def transform(self, X):
-        return [self.decode(x.strip()) for x in X]
+        return [self.decode(x) for x in X]
+    
+class VowpalWabbitFormatEncoder(BaseEstimator, TransformerMixin):
+    
+    def fit(self, X, y=None):
+        return self
+    
+    def sent_encode(self, sent):
+        return Counter([token.lemma for token in sent.tokens])
+    
+    def encode(self, x):
+        x = reduce((lambda x, y: x + y), [self.sent_encode(sent) for sent in x])
+        return ' '.join([f'{token}' + (f':{count}' if count > 1 else '') for token, count in x.items()])
+    
+    def transform(self, X):
+        return [self.encode(x) for x in X]
+        

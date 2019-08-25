@@ -1,0 +1,168 @@
+Log file created at: 2019/08/25 21:08:57
+Running on machine: ga
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0825 21:08:57.309895  6863 c_interface.cc:127] Logging enabled to .
+I0825 21:08:57.309962  6863 c_interface.cc:128] BigARTM version: v0.9.0
+I0825 21:08:57.309980  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 21:08:57.309993  6863 c_interface.cc:274] Creating MasterModel (id=1)...
+I0825 21:08:57.310416  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+E0825 21:08:57.384475  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:104, can not parse integer number of occurences: хттп://медиа:3
+I0825 22:32:54.045001  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:32:54.045030  6863 c_interface.cc:274] Creating MasterModel (id=2)...
+I0825 22:32:54.045459  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:32:54.069197  7939 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+E0825 22:32:54.138981  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:2193, can not parse integer number of occurences: хттпс://т.цо/тыи3одуакф
+I0825 22:33:08.381399  6863 c_interface.cc:375] Pass 9aab3c2d-b0b2-4f04-9e2a-def44f6a9780 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:33:08.381429  6863 c_interface.cc:339] Disposing MasterComponent (id=1)...
+I0825 22:33:08.381839  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:33:08.381853  6863 c_interface.cc:274] Creating MasterModel (id=3)...
+I0825 22:33:08.382195  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:33:08.408314  7949 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+E0825 22:33:08.538291  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:2880, can not parse integer number of occurences: ответил:-
+I0825 22:33:51.000031  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:33:51.000054  6863 c_interface.cc:274] Creating MasterModel (id=4)...
+I0825 22:33:51.000444  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:33:51.024216  7976 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:33:51.119632  7973 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:33:51.136029  7974 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:33:51.143775  7975 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+E0825 22:33:51.150086  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:3539, can not parse integer number of occurences: фото:/ru
+I0825 22:34:33.031791  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:34:33.031816  6863 c_interface.cc:274] Creating MasterModel (id=5)...
+I0825 22:34:33.032481  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:34:33.055790  7995 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:34:33.154983  7998 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:34:33.163147  7992 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:34:33.170850  7996 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:34:33.178819  7991 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+E0825 22:34:33.185636  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:7016, can not parse integer number of occurences: 2:1.самый
+I0825 22:35:32.094724  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:35:32.094821  6863 c_interface.cc:274] Creating MasterModel (id=6)...
+I0825 22:35:32.095309  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:35:32.119503  8017 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:35:32.212255  8018 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:35:32.223136  8016 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:35:32.231304  8019 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:35:32.239480  8014 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+E0825 22:35:32.246126  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:7016, can not parse integer number of occurences: 1:11.самый
+I0825 22:35:49.060712  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:35:49.060729  6863 c_interface.cc:274] Creating MasterModel (id=7)...
+I0825 22:35:49.061156  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:35:49.088881  8033 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:35:49.174028  8032 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:35:49.186363  8034 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:35:49.194672  8036 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:35:49.202437  8031 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+E0825 22:35:49.208989  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:9088, can not parse integer number of occurences: 18:00.читать
+I0825 22:36:16.453660  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:36:16.453687  6863 c_interface.cc:274] Creating MasterModel (id=8)...
+I0825 22:36:16.454123  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:36:16.477550  8045 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:36:16.572201  8047 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:36:16.611780  8046 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:36:16.618926  8048 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:36:16.640338  8049 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+E0825 22:36:16.648306  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:3645, can not parse integer number of occurences: применяются):маршрут:3
+I0825 22:38:51.402912  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:38:51.403187  6863 c_interface.cc:274] Creating MasterModel (id=9)...
+I0825 22:38:51.405535  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:38:51.431285  8176 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:38:51.530019  8173 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:38:51.540633  8177 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:38:51.567070  8180 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:38:51.578251  8174 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:38:51.586560  8178 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+E0825 22:38:51.594542  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:7016, can not parse integer number of occurences: 4:2.через
+I0825 22:39:15.718147  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:39:15.718204  6863 c_interface.cc:274] Creating MasterModel (id=10)...
+I0825 22:39:15.721475  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:39:15.753554  8200 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:39:15.841774  8190 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:39:15.858180  8196 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:39:15.870496  8193 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:39:15.883519  8198 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+W0825 22:39:15.891755  8191 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:39:15.899087  8197 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+E0825 22:39:15.907135  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:4160, can not parse integer number of occurences: 5:36am
+I0825 22:54:28.250514  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:54:28.250747  6863 c_interface.cc:274] Creating MasterModel (id=11)...
+I0825 22:54:28.253455  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:54:28.283021  8455 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:54:28.389030  8457 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+W0825 22:54:28.398610  8456 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:54:28.410539  8452 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:54:28.419489  8453 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:54:28.427348  8460 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:54:28.434962  8450 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+E0825 22:54:28.443054  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:5405, can not parse integer number of occurences: реутерс://реал
+I0825 22:54:39.754595  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:54:39.754648  6863 c_interface.cc:274] Creating MasterModel (id=12)...
+I0825 22:54:39.758401  6863 c_interface.cc:375] Pass 622e68b6-e406-47a0-9991-4ad613dda64d to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.758544  6863 c_interface.cc:339] Disposing MasterComponent (id=4)...
+I0825 22:54:39.758913  6863 c_interface.cc:375] Pass 589ea0fa-4067-42f0-b883-264078904805 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.758996  6863 c_interface.cc:339] Disposing MasterComponent (id=5)...
+I0825 22:54:39.759202  6863 c_interface.cc:375] Pass 3ada902d-ef76-4e46-b55e-243d5adadf46 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.759272  6863 c_interface.cc:339] Disposing MasterComponent (id=6)...
+I0825 22:54:39.759444  6863 c_interface.cc:375] Pass a90b4e2b-1e13-4428-9d8c-ad49ebfe2319 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.759531  6863 c_interface.cc:339] Disposing MasterComponent (id=7)...
+I0825 22:54:39.759717  6863 c_interface.cc:375] Pass 8b7de15d-429a-4a86-b385-b9f2ed518218 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.759763  6863 c_interface.cc:339] Disposing MasterComponent (id=8)...
+I0825 22:54:39.759927  6863 c_interface.cc:375] Pass 0c93b909-84b7-43fa-a497-d7c6ad1f27e3 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.759968  6863 c_interface.cc:339] Disposing MasterComponent (id=9)...
+I0825 22:54:39.760147  6863 c_interface.cc:375] Pass 19a592d6-7dc6-485c-8e53-a095b3d9af25 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 22:54:39.760236  6863 c_interface.cc:339] Disposing MasterComponent (id=10)...
+I0825 22:54:39.762732  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:54:39.790099  8472 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:54:39.892498  8469 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:54:39.906252  8467 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:54:39.916105  8468 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:54:39.930102  8466 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:54:39.941386  8464 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:54:39.951375  8470 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+E0825 22:54:39.960183  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:4160, can not parse integer number of occurences: 5:36am
+I0825 22:54:50.768368  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:54:50.768383  6863 c_interface.cc:274] Creating MasterModel (id=13)...
+I0825 22:54:50.769138  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:54:50.793998  8486 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:54:50.907480  8484 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:54:50.918908  8482 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:54:50.939229  8483 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:54:50.947962  8490 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:54:50.960671  8491 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:54:50.971374  8487 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+E0825 22:54:50.980260  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:5980, can not parse integer number of occurences: 57:3.отметить
+I0825 22:55:02.909364  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:55:02.909502  6863 c_interface.cc:274] Creating MasterModel (id=14)...
+I0825 22:55:02.909909  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:55:02.932834  8503 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:55:03.028046  8505 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:55:03.048166  8507 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+W0825 22:55:03.064002  8496 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:55:03.076872  8498 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:55:03.085624  8501 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:55:03.093839  8504 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+E0825 22:55:03.111198  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:6168, can not parse integer number of occurences: 2:11.кать
+I0825 22:55:13.097335  6863 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0825 22:55:13.097352  6863 c_interface.cc:274] Creating MasterModel (id=15)...
+I0825 22:55:13.098032  6863 collection_parser.cc:557] CollectionParserConfig.num_threads is automatically set to 12
+W0825 22:55:13.121613  8515 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0825 22:55:13.216536  8521 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0825 22:55:13.228874  8517 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0825 22:55:13.244012  8520 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0825 22:55:13.255012  8513 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0825 22:55:13.264436  8510 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaf.batch
+W0825 22:55:13.273712  8518 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0825 22:55:13.284473  8511 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+E0825 22:55:13.293880  6863 c_interface.cc:59] InvalidOperation :  Error in ../data/interim/articles_vw.txt:6192, can not parse integer number of occurences: 1:0.болельщик
+I0825 23:02:53.309654  6863 c_interface.cc:375] Pass 5e2ce7c8-c73e-41f9-b264-f107480de3e9 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 23:02:53.309782  6863 c_interface.cc:339] Disposing MasterComponent (id=3)...
+I0825 23:02:53.309803  6863 c_interface.cc:375] Pass 81728ec0-1351-448c-bc0c-bdd7228a195c to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 23:02:53.309813  6863 c_interface.cc:339] Disposing MasterComponent (id=2)...
+I0825 23:02:53.309834  6863 c_interface.cc:375] Pass fd36686e-208b-4eae-a554-9d5e8ee4e7eb to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 23:02:53.309841  6863 c_interface.cc:339] Disposing MasterComponent (id=12)...
+I0825 23:02:53.309852  6863 c_interface.cc:375] Pass 575b7f52-8a28-4e74-b355-733566216027 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 23:02:53.309860  6863 c_interface.cc:339] Disposing MasterComponent (id=11)...
+I0825 23:02:53.309875  6863 c_interface.cc:375] Pass 39dafd44-5094-4d54-9126-a3f1e11357d5 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 23:02:53.309883  6863 c_interface.cc:339] Disposing MasterComponent (id=13)...
+I0825 23:02:53.309897  6863 c_interface.cc:375] Pass 13d60922-4268-46a6-9dc2-03849a25a485 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0825 23:02:53.309906  6863 c_interface.cc:339] Disposing MasterComponent (id=14)...
