@@ -12,12 +12,12 @@ def replace_nan_labels(data, postfix=' '):
     
     return data[labels_name]
 
-def get_colors(parent_colors_map, data):
+def get_colors(colors_map, data):
     
     parent_name, labels_name, values_name = data.columns
     
-    colors_map = {}
-    for parent, color in parent_colors_map.items():
+    new_colors_map = {}
+    for parent, color in colors_map.items():
         
         current_data = data[data[parent_name] == parent]
         
@@ -31,9 +31,9 @@ def get_colors(parent_colors_map, data):
             colors = cl.interp(colors, n_values)
             
         current_data = current_data.sort_values(by=values_name)[labels_name]
-        colors_map.update(dict(zip(current_data, colors)))
+        new_colors_map.update(dict(zip(current_data, colors)))
         
-    return colors_map
+    return new_colors_map
 
 def generate_values_for_visualization(data, levels_names):
     
