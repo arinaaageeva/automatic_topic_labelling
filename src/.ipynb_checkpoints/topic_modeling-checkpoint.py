@@ -16,6 +16,9 @@ class TopicModeling(BaseEstimator, ClusterMixin):
                                cache_theta = True, theta_columns_naming='title')
         
         self.model.scores.add(artm.PerplexityScore(name='perplexity', dictionary=dictionary))
+        self.model.scores.add(artm.TopTokensScore(name='per_top_tokens', class_id='per', num_tokens=100))
+        self.model.scores.add(artm.TopTokensScore(name='loc_top_tokens', class_id='loc', num_tokens=100))
+        self.model.scores.add(artm.TopTokensScore(name='org_top_tokens', class_id='org', num_tokens=100))
         self.model.scores.add(artm.TopTokensScore(name='title_top_tokens', class_id='title', num_tokens=100))
         self.model.scores.add(artm.TopTokensScore(name='text_top_tokens', class_id='text', num_tokens=100))
         
@@ -50,7 +53,7 @@ def get_metrics(labels_true, labels_pred):
                                      for index in labels_pred.index])
     
     return metrics.adjusted_rand_score(labels_true, labels_pred), \
-           metrics.adjusted_mutual_info_score(labels_true, labels_pred), \
+           metrics.adjusted_mutual_info_score(labels_true, labels_pred, average_method='arithmetic'), \
            metrics.homogeneity_score(labels_true, labels_pred), \
            metrics.fowlkes_mallows_score(labels_true, labels_pred)
 

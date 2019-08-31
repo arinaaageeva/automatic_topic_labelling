@@ -1,9 +1,11 @@
 import re
+import time
 
 from typing import List
 from rusenttokenize import ru_sent_tokenize
 from spacy.lang.ru import Russian
 from spacy_russian_tokenizer import RussianTokenizer, MERGE_PATTERNS, SYNTAGRUS_RARE_CASES
+from deeppavlov import configs, build_model
 from pyaspeller import Word, YandexSpeller
 from transliterate import translit
 from rnnmorph.predictor import RNNMorphPredictor
@@ -13,14 +15,16 @@ from functools import reduce
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
+from tqdm import tqdm
+
 class Token:
     
     def __init__(self, \
                  token_id: int, \
                  form: str, \
                  lemma: str = None, \
-                 upos: str = None, \
-                 xpos: str = None, \
+                 pos: str = None, \
+                 ne: str = None, \
                  feats: str = None, \
                  head: int = None, \
                  deprel: str = None, \
@@ -30,8 +34,8 @@ class Token:
         self.token_id = token_id
         self.form = form
         self.lemma = lemma
-        self.upos = upos
-        self.xpos = xpos
+        self.pos = pos
+        self.ne = ne
         self.feats = feats
         self.head = head
         self.deprel = deprel
@@ -48,101 +52,118 @@ class Sentence:
         self.sent_id = sent_id
         self.text = text
         self.tokens = tokens
-    
-class ReplaceChars(BaseEstimator, TransformerMixin):
-    
-    def __init__(self, chars_map=None):
-        self.chars_map = chars_map
-    
-    def fit(self, X, y=None):
-        return self
-    
-    def replace_chars(self, x):
-        for replaceable_char, replacement_char in self.chars_map.items():
-            x = x.replace(replaceable_char, replacement_char)
-        return x
-    
-    def transform(self, X):
-        if self.chars_map:
-            X = [self.replace_chars(x) for x in X]
-        return X
-    
-class RegExprSub(BaseEstimator, TransformerMixin):
-    
-    def __init__(self, pattern=None, repl=None):
         
-        if pattern:
-            pattern = re.compile(pattern)
-        
-        self.pattern = pattern
-        self.repl = repl
-        
+class PreProcesser(BaseEstimator, TransformerMixin):
+    
     def fit(self, X, y=None):
         return self
     
     def transform(self, X):
-        if self.pattern and self.repl:
-            X = [self.pattern.sub(self.repl, x) for x in X]
-        return X
         
-class Strip(BaseEstimator, TransformerMixin):
+        print(type(self).__name__)
+        time.sleep(1)
         
-    def fit(self, X, y=None):
-        return self
+        return [self.transform_item(x) for x in tqdm(X)]
     
-    def transform(self, X):
-        return [x.strip() for x in X]
-
-#https://github.com/deepmipt/ru_sentence_tokenizer 
-class RusSentTokenizer(BaseEstimator, TransformerMixin):
+class Cleaner(PreProcesser):
     
-    def fit(self, X, y=None):
-        return self
-    
-    def sent_tokenize(self, x):
-        return [Sentence(sent_id, sent) 
-                for sent_id, sent in 
-                enumerate(ru_sent_tokenize(x))]
-    
-    def transform(self, X):
-        return [self.sent_tokenize(x) for x in X]
-    
-class Yandex_Speller(BaseEstimator, TransformerMixin):
-    
-    def __init__(self):
-        self.speller = YandexSpeller()
-    
-    def fit(self, X, y=None):
-        return self
-    
-    def sent_spell(self, sent):
-        
-        changes = {change['word']: change['s'][0] 
-                   for change in self.speller.spell(sent.text) 
-                   if change['s']}
-        
-        for word, suggestion in changes.items():
-            sent.text = sent.text.replace(word, suggestion)
-        
+    def transform_sent(self, sent):
+        sent.text = self.transform_text(sent.text)
         return sent
     
-    def spell(self, x):
-        
-        x_spell = []
-        for sent in x:
-            try:
-                sent = self.sent_spell(sent)
-                x_spell.append(sent)
-            except:
-                pass
-                
-        return x_spell
+    def transform_item(self, x):
+        if self.sent:
+            return [self.transform_sent(sent) for sent in x]
+        return self.transform_text(x)
     
-    def transform(self, X):
-        return [self.spell(x) for x in X]
+class ReplaceChars(Cleaner):
+    
+    def __init__(self, chars_map=None, sent=False):
+        self.chars_map = {} if chars_map is None else chars_map
+        self.sent = sent
+        
+    def transform_text(self, text):
+        for replaceable_char, replacement_char in self.chars_map.items():
+            text = text.replace(replaceable_char, replacement_char)
+        return text
+    
+class ReplacePart(Cleaner):
+    
+    def __init__(self, pattern=None, rule=None, sent=False):
+        self.pattern = pattern if pattern is None else re.compile(pattern)
+        self.rule = (lambda x: x) if rule is None else rule
+        self.sent = sent
+        
+    def transform_text(self, text):
+        if self.pattern is not None:
+            for part in self.pattern.findall(text):
+                text = text.replace(part, self.rule(part))
+        return text
+    
+class RegExprSub(Cleaner):
+    
+    def __init__(self, pattern=None, repl=None, sent=False):
+        self.pattern = pattern if pattern is None else re.compile(pattern)
+        self.repl = repl
+        self.sent = sent
+        
+    def transform_text(self, text):
+        if (self.pattern is not None) and (self.repl is not None):
+            text = self.pattern.sub(self.repl, text)
+        return text
+
+class Strip(Cleaner):
+    
+    def __init__(self, sent=False):
+        self.sent = sent
+    
+    def transform_text(self, text):
+        return text.strip()
+    
+class Yandex_Speller(Cleaner):
+    
+    def __init__(self, sent=False):
+        self.speller = YandexSpeller()
+        self.sent = sent
+    
+    def transform_text(self, text):
+        
+        try:
+            changes = {change['word']: change['s'][0] 
+                       for change in self.speller.spell(text) if change['s']}
+            for word, suggestion in changes.items():
+                text = text.replace(word, suggestion)
+        
+        except:
+            pass
+        
+        return text
+
+#https://github.com/deepmipt/ru_sentence_tokenizer 
+class RusSentTokenizer(PreProcesser):
+    
+    def transform_item(self, x):
+        return [Sentence(sent_id, sent) for sent_id, sent in enumerate(ru_sent_tokenize(x), 1)]
+    
+#http://docs.deeppavlov.ai/en/master/features/models/ner.html    
+class NER_RusWordTokenizer(PreProcesser):
+    
+    def __init__(self):
+        self.rus_ne_recognizer = build_model(configs.ner.ner_rus_bert)
+    
+    def transform_item(self, x):
+        
+        new_x = []
+        
+        for sent, tokens, tokens_ne in zip(*[x]+self.rus_ne_recognizer([sent.text for sent in x])):
+            sent.tokens =  [Token(token_id, token, ne=token_ne) 
+                            for token_id, (token, token_ne) in enumerate(zip(tokens, tokens_ne), 1)]
+            new_x.append(sent)
+    
+        return new_x
     
 #https://github.com/aatimofeev/spacy_russian_tokenizer
-class Spacy_RusWordTokenizer(BaseEstimator, TransformerMixin):
+class Spacy_RusWordTokenizer(PreProcesser):
     
     def __init__(self):
         
@@ -150,64 +171,153 @@ class Spacy_RusWordTokenizer(BaseEstimator, TransformerMixin):
         pipe = RussianTokenizer(self.rus_word_tokenizer, MERGE_PATTERNS + SYNTAGRUS_RARE_CASES)
         self.rus_word_tokenizer.add_pipe(pipe, name='russian_tokenizer')
     
-    def fit(self, X, y=None):
-        return self
+    def transform_text(self, text):
+        return [Token(token_id, token.text) for token_id, token in enumerate(self.rus_word_tokenizer(text), 1)]
     
-    def sent_tokenize(self, sent):
-        sent.tokens = [Token(token_id, token.text) 
-                       for token_id, token in 
-                       enumerate(self.rus_word_tokenizer(sent.text), 1)]
+    def transform_sent(self, sent):
+        sent.tokens = self.transform_text(sent.text)
         return sent
     
-    def tokenize(self, x):
-        return [self.sent_tokenize(sent) for sent in x]
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
     
-    def transform(self, X):
-        return [self.tokenize(x) for x in X]
+class SpaceDetecter(PreProcesser):
     
-class SpaceDetecter(BaseEstimator, TransformerMixin):
-    
-    def fit(self, X, y=None):
-        return self
-    
-    def sent_detect(self, sent):
+    def transform_sent(self, sent):
         
         spaces = []
-        viewed_text = sent.text
+        text = sent.text
         
         for token in sent.tokens:
             
-            index = viewed_text.find(token.form)
+            index = text.find(token.form)
             spaces.append(bool(index))
             
-            viewed_text = viewed_text[index+len(token.form):]
-        
+            text = text[index+len(token.form):]
+            
         spaces = spaces[1:]+[False]
+        
         for token, space in zip(sent.tokens, spaces):
             token.space = space
-            
+        
         return sent
     
-    def detect(self, x):
-        return [self.sent_detect(sent) for sent in x]
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
     
-    def transform(self, X):
-        return [self.detect(x) for x in X]
+class TokensCorrecter(PreProcesser):
+    
+    def join(self, chunks, spaces):
+        return ''.join([chunk + (' ' if space else '') for chunk, space in zip(chunks, spaces)]).strip()
+    
+    def join_forms(self, chunks):
+        return self.join([chunk.form for chunk in chunks], [chunk.space for chunk in chunks])
+    
+    def join_lemmas(self, chunks):
+        return self.join([chunk.lemma for chunk in chunks], [chunk.space for chunk in chunks])
+        
+    def update_tokens_id(self, tokens):
+        
+        new_tokens = []
+        for token_id, token in enumerate(tokens, 1):
+            token.token_id = token_id
+            new_tokens.append(token)
+        return new_tokens
+    
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
+    
+class NONECorrecter(TokensCorrecter):
+    
+    def __init__(self):
+        self.tokenizer = Spacy_RusWordTokenizer()
+        self.space_detecter = SpaceDetecter()
+        
+    def extend_new_tokens(self, tokens, chunks):
+        
+        if chunks:
+            
+            for token in self.tokenizer.transform_text(self.join_forms(chunks)):
+                
+                token.ne = 'O'
+                tokens.append(token)
+        
+        return tokens
+    
+    def transform_sent(self, sent):
+        
+        chunks = []
+        new_tokens = []
+        
+        for token in sent.tokens:
+            
+            if (token.ne[0] == 'O'):
+                chunks.append(token)
+            else:
+                self.extend_new_tokens(new_tokens, chunks)
+                new_tokens.append(token)
+                chunks = []
+
+        self.extend_new_tokens(new_tokens, chunks)
+        sent.tokens = self.update_tokens_id(new_tokens)
+        return self.space_detecter.transform_sent(sent)
+        
+class NECorrecter(TokensCorrecter):
+    
+    def append_new_token(self, tokens, chunks):
+        
+        if chunks:
+            
+            token_id = chunks[0].token_id
+            form = self.join_forms(chunks)
+            lemma = self.join_lemmas(chunks)
+            pos = 'NOUN'
+            ne = chunks[0].ne
+            
+            feats = [chunk.feats for chunk in chunks if chunk.pos == pos]
+            feats = feats[0] if feats else chunks[0].feats
+            
+            space = chunks[-1].space
+            
+            tokens.append(Token(token_id, form, lemma=lemma, pos=pos, ne=ne, feats=feats, space=space)) 
+        
+        return tokens
+        
+    
+    def transform_sent(self, sent):
+    
+        chunks = []
+        new_tokens = []
+        
+        for token in sent.tokens:
+            
+            if (token.ne[0] == 'B'):
+                
+                self.append_new_token(new_tokens, chunks)
+                chunks = [token]
+                
+            elif (token.ne[0] == 'I'):
+                chunks.append(token)
+                
+            else:
+                self.append_new_token(new_tokens, chunks)
+                new_tokens.append(token)
+                chunks = []
+        
+        sent.tokens = self.update_tokens_id(new_tokens)
+        return sent
 
 #https://github.com/IlyaGusev/rnnmorph
-class MorphPredictor(BaseEstimator, TransformerMixin):
+class MorphPredictor(PreProcesser):
     
     def __init__(self, translit_flag=True):
         self.translit_flag = translit_flag
         self.rnnmorph = RNNMorphPredictor(language='ru')
-        
-    def fit(self, X, y=None):
-        return self
     
     def translit(self, form):
         return translit(form, 'ru') if re.match(r'[a-zA-Z]+', form) else form
-        
-    def sent_predict(self, sent):
+    
+    def transform_sent(self, sent):
         
         forms = [token.form for token in sent.tokens]
         if self.translit_flag:
@@ -216,57 +326,45 @@ class MorphPredictor(BaseEstimator, TransformerMixin):
         
         for token, form in zip(sent.tokens, forms):
             token.lemma = form.normal_form
-            token.upos = form.pos
+            token.pos = form.pos
             token.feats = form.tag
         
         return sent
-    
-    def predict(self, x):
-        return [self.sent_predict(sent) for sent in x]
-    
-    def transform(self, X):
-        return [self.predict(x) for x in X]
-    
-class MorphFilter(BaseEstimator, TransformerMixin):
-    
-    def __init__(self, upos_set=set()):
-        self.upos_set = upos_set
         
-    def fit(self, X, y=None):
-        return self
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
+
+class MorphFilter(PreProcesser):
     
-    def sent_filtration(self, sent):
-        sent.tokens = [token for token in sent.tokens if token.upos in self.upos_set]
+    def __init__(self, pos_set=None):
+        self.pos_set = set() if pos_set is None else pos_set
+    
+    def transform_sent(self, sent):
+        sent.tokens = [token for token in sent.tokens if token.pos in self.pos_set]
         return sent
     
-    def filtration(self, x):
-        return [self.sent_filtration(sent) for sent in x]
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
     
-    def transform(self, X):
-        return [self.filtration(x) for x in X] 
+# class SyntaxParser(BaseEstimator, TransformerMixin):
     
-class SyntaxParser(BaseEstimator, TransformerMixin):
-    
-    def __init__(self, model_path):
+#     def __init__(self, model_path):
         
-        self.parser_model = Model.load(model_path)
-        self.parser_pipeline = Pipeline(self.parser_model, 'conllu', Pipeline.NONE, Pipeline.DEFAULT, 'conllu')
+#         self.parser_model = Model.load(model_path)
+#         self.parser_pipeline = Pipeline(self.parser_model, 'conllu', Pipeline.NONE, Pipeline.DEFAULT, 'conllu')
         
-    def fit(self, X, y=None):
-        return self
+#     def fit(self, X, y=None):
+#         return self
     
-    def parse(self, x):
-        return self.parser_pipeline.process(x, ProcessingError())
+#     def parse(self, x):
+#         return self.parser_pipeline.process(x, ProcessingError())
     
-    def transform(self, X):
-        return [self.parse(x) for x in X]
+#     def transform(self, X):
+#         return [self.parse(x) for x in X]
     
-class CoNLLUFormatEncoder(BaseEstimator, TransformerMixin):
+class CoNLLUFormatEncoder(PreProcesser):
     
-    def fit(self, X, y=None):
-        return self
-    
-    def token_encode(self, token):
+    def transform_token(self, token):
         
         encode_nan = lambda x: '_' if x is None else x
         encode_space = lambda x: 'SpaceAfter=No' if x is False else '_'
@@ -274,8 +372,8 @@ class CoNLLUFormatEncoder(BaseEstimator, TransformerMixin):
         conllu_token = f'{token.token_id}\t'
         conllu_token += f'{token.form}\t'
         conllu_token += f'{encode_nan(token.lemma)}\t'
-        conllu_token += f'{encode_nan(token.upos)}\t'
-        conllu_token += f'{encode_nan(token.xpos)}\t'
+        conllu_token += f'{encode_nan(token.pos)}\t'
+        conllu_token += f'{encode_nan(token.ne)}\t'
         conllu_token += f'{encode_nan(token.feats)}\t'
         conllu_token += f'{encode_nan(token.head)}\t'
         conllu_token += f'{encode_nan(token.deprel)}\t'
@@ -284,24 +382,18 @@ class CoNLLUFormatEncoder(BaseEstimator, TransformerMixin):
         
         return conllu_token
         
-    def sent_encode(self, sent):
+    def transform_sent(self, sent):
         conllu_sent = f'# sent_id = {sent.sent_id}\n# text = {sent.text}\n'
         for token in sent.tokens:
-            conllu_sent += f'{self.token_encode(token)}\n'
+            conllu_sent += f'{self.transform_token(token)}\n'
         return conllu_sent.strip()
     
-    def encode(self, x):
-        return '\n\n'.join([self.sent_encode(sent) for sent in x])+'\n\n'
+    def transform_item(self, x):
+        return '\n\n'.join([self.transform_sent(sent) for sent in x])+'\n\n'
     
-    def transform(self, X):
-        return [self.encode(x) for x in X]
+class  CoNLLUFormatDecoder(PreProcesser):
     
-class  CoNLLUFormatDecoder(BaseEstimator, TransformerMixin):
-    
-    def fit(self, X, y=None):
-        return self
-    
-    def token_decode(self, token):
+    def transform_token(self, token):
         
         decode_nan = lambda x: None if x is '_' else x
         decode_int = lambda x: x if x is None else int(x)
@@ -315,34 +407,16 @@ class  CoNLLUFormatDecoder(BaseEstimator, TransformerMixin):
         
         return Token(*token)
     
-    def sent_decode(self, sent):
+    def transform_sent(self, sent):
         
         sent = sent.split('\n')
         
         sent_id = int(sent[0][12:])
         text = sent[1][9:]
-        tokens = [self.token_decode(token) for token in sent[2:]]
+        tokens = [self.transform_token(token) for token in sent[2:]]
         
         return Sentence(sent_id, text, tokens)
     
-    def decode(self, x):
-        return [self.sent_decode(sent) for sent in x.strip().split('\n\n')]
-    
-    def transform(self, X):
-        return [self.decode(x) for x in X]
-    
-class VowpalWabbitFormatEncoder(BaseEstimator, TransformerMixin):
-    
-    def fit(self, X, y=None):
-        return self
-    
-    def sent_encode(self, sent):
-        return Counter([token.lemma for token in sent.tokens])
-    
-    def encode(self, x):
-        x = reduce((lambda x, y: x + y), [self.sent_encode(sent) for sent in x])
-        return ' '.join([f'{token}' + (f':{count}' if count > 1 else '') for token, count in x.items()])
-    
-    def transform(self, X):
-        return [self.encode(x) for x in X]
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x.strip().split('\n\n')]
         
