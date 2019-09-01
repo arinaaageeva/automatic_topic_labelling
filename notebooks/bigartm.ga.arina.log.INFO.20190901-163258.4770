@@ -1,0 +1,27 @@
+Log file created at: 2019/09/01 16:32:58
+Running on machine: ga
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0901 16:32:58.929180  4770 c_interface.cc:127] Logging enabled to .
+I0901 16:32:58.929244  4770 c_interface.cc:128] BigARTM version: v0.10.0
+I0901 16:32:58.929260  4770 c_interface.cc:271] Pass MasterModelConfig: topic_name_size=0, score_config_size=1, num_processors=0, pwt_name=pwt, nwt_name=nwt, num_document_passes=0, reuse_theta=no, cache_theta=no, opt_for_avx=yes, disk_cache_path= to ArtmCreateMasterModel
+I0901 16:32:58.929270  4770 c_interface.cc:274] Creating MasterModel (id=1)...
+I0901 16:32:58.929797  4770 collection_parser.cc:771] CollectionParserConfig.num_threads is automatically set to 12
+W0901 16:32:58.960302  5508 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0901 16:32:59.007120  5499 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0901 16:32:59.024416  5506 helpers.cc:221] File already exists: ../data/interim/batches/aaaaah.batch
+W0901 16:32:59.037010  5504 helpers.cc:221] File already exists: ../data/interim/batches/aaaaag.batch
+W0901 16:32:59.046561  5500 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0901 16:32:59.056830  5503 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0901 16:32:59.068404  5502 helpers.cc:221] File already exists: ../data/interim/batches/aaaaae.batch
+W0901 16:32:59.078155  5501 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0901 16:32:59.090574  5510 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0901 16:32:59.101521  5507 helpers.cc:221] File already exists: ../data/interim/batches/aaaaak.batch
+W0901 16:32:59.113293  5509 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaf.batch
+W0901 16:32:59.124940  5505 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
+I0901 16:32:59.138087  4770 c_interface.cc:375] Pass 4887e987-ad7b-4196-b625-19016dcdb0f6 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0901 16:32:59.138151  4770 c_interface.cc:389] Pass GatherDictionaryArgs: dictionary_target_name=4887e987-ad7b-4196-b625-19016dcdb0f6, data_path=../data/interim/batches, symmetric_cooc_values=0 to MN4artm4core15MasterComponentEFvRKNS_20GatherDictionaryArgsEE
+I0901 16:32:59.138208  4770 dictionary_operations.cc:265] Found 12 batches in '../data/interim/batches' folder
+I0901 16:32:59.330435  4770 dictionary_operations.cc:331] Find 58175 unique tokens in 11126 items
+I0901 16:32:59.371551  4770 dictionary_operations.cc:611] Dictionary name='4887e987-ad7b-4196-b625-19016dcdb0f6' contains entries: loc:3116; org:6251; per:9749; text:31621; title:7438; 
+I0901 16:35:31.437621  4770 c_interface.cc:375] Pass 4887e987-ad7b-4196-b625-19016dcdb0f6 to MN4artm4core15MasterComponentEFvRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE
+I0901 16:35:31.456334  4770 c_interface.cc:339] Disposing MasterComponent (id=1)...

@@ -145,23 +145,6 @@ class RusSentTokenizer(PreProcesser):
     def transform_item(self, x):
         return [Sentence(sent_id, sent) for sent_id, sent in enumerate(ru_sent_tokenize(x), 1)]
     
-#http://docs.deeppavlov.ai/en/master/features/models/ner.html    
-class NER_RusWordTokenizer(PreProcesser):
-    
-    def __init__(self):
-        self.rus_ne_recognizer = build_model(configs.ner.ner_rus_bert)
-    
-    def transform_item(self, x):
-        
-        new_x = []
-        
-        for sent, tokens, tokens_ne in zip(*[x]+self.rus_ne_recognizer([sent.text for sent in x])):
-            sent.tokens =  [Token(token_id, token, ne=token_ne) 
-                            for token_id, (token, token_ne) in enumerate(zip(tokens, tokens_ne), 1)]
-            new_x.append(sent)
-    
-        return new_x
-    
 #https://github.com/aatimofeev/spacy_russian_tokenizer
 class Spacy_RusWordTokenizer(PreProcesser):
     
@@ -181,131 +164,22 @@ class Spacy_RusWordTokenizer(PreProcesser):
     def transform_item(self, x):
         return [self.transform_sent(sent) for sent in x]
     
-class SpaceDetecter(PreProcesser):
-    
-    def transform_sent(self, sent):
-        
-        spaces = []
-        text = sent.text
-        
-        for token in sent.tokens:
-            
-            index = text.find(token.form)
-            spaces.append(bool(index))
-            
-            text = text[index+len(token.form):]
-            
-        spaces = spaces[1:]+[False]
-        
-        for token, space in zip(sent.tokens, spaces):
-            token.space = space
-        
-        return sent
-    
-    def transform_item(self, x):
-        return [self.transform_sent(sent) for sent in x]
-    
-class TokensCorrecter(PreProcesser):
-    
-    def join(self, chunks, spaces):
-        return ''.join([chunk + (' ' if space else '') for chunk, space in zip(chunks, spaces)]).strip()
-    
-    def join_forms(self, chunks):
-        return self.join([chunk.form for chunk in chunks], [chunk.space for chunk in chunks])
-    
-    def join_lemmas(self, chunks):
-        return self.join([chunk.lemma for chunk in chunks], [chunk.space for chunk in chunks])
-        
-    def update_tokens_id(self, tokens):
-        
-        new_tokens = []
-        for token_id, token in enumerate(tokens, 1):
-            token.token_id = token_id
-            new_tokens.append(token)
-        return new_tokens
-    
-    def transform_item(self, x):
-        return [self.transform_sent(sent) for sent in x]
-    
-class NONECorrecter(TokensCorrecter):
+#http://docs.deeppavlov.ai/en/master/features/models/ner.html    
+class NER_RusWordTokenizer(PreProcesser):
     
     def __init__(self):
-        self.tokenizer = Spacy_RusWordTokenizer()
-        self.space_detecter = SpaceDetecter()
-        
-    def extend_new_tokens(self, tokens, chunks):
-        
-        if chunks:
-            
-            for token in self.tokenizer.transform_text(self.join_forms(chunks)):
-                
-                token.ne = 'O'
-                tokens.append(token)
-        
-        return tokens
+        self.rus_ne_recognizer = build_model(configs.ner.ner_rus_bert)
     
-    def transform_sent(self, sent):
+    def transform_item(self, x):
         
-        chunks = []
-        new_tokens = []
+        new_x = []
         
-        for token in sent.tokens:
-            
-            if (token.ne[0] == 'O'):
-                chunks.append(token)
-            else:
-                self.extend_new_tokens(new_tokens, chunks)
-                new_tokens.append(token)
-                chunks = []
-
-        self.extend_new_tokens(new_tokens, chunks)
-        sent.tokens = self.update_tokens_id(new_tokens)
-        return self.space_detecter.transform_sent(sent)
-        
-class NECorrecter(TokensCorrecter):
+        for sent, tokens, tokens_ne in zip(*[x]+self.rus_ne_recognizer([sent.text for sent in x])):
+            sent.tokens =  [Token(token_id, token, ne=token_ne) 
+                            for token_id, (token, token_ne) in enumerate(zip(tokens, tokens_ne), 1)]
+            new_x.append(sent)
     
-    def append_new_token(self, tokens, chunks):
-        
-        if chunks:
-            
-            token_id = chunks[0].token_id
-            form = self.join_forms(chunks)
-            lemma = self.join_lemmas(chunks)
-            pos = 'NOUN'
-            ne = chunks[0].ne
-            
-            feats = [chunk.feats for chunk in chunks if chunk.pos == pos]
-            feats = feats[0] if feats else chunks[0].feats
-            
-            space = chunks[-1].space
-            
-            tokens.append(Token(token_id, form, lemma=lemma, pos=pos, ne=ne, feats=feats, space=space)) 
-        
-        return tokens
-        
-    
-    def transform_sent(self, sent):
-    
-        chunks = []
-        new_tokens = []
-        
-        for token in sent.tokens:
-            
-            if (token.ne[0] == 'B'):
-                
-                self.append_new_token(new_tokens, chunks)
-                chunks = [token]
-                
-            elif (token.ne[0] == 'I'):
-                chunks.append(token)
-                
-            else:
-                self.append_new_token(new_tokens, chunks)
-                new_tokens.append(token)
-                chunks = []
-        
-        sent.tokens = self.update_tokens_id(new_tokens)
-        return sent
+        return new_x
 
 #https://github.com/IlyaGusev/rnnmorph
 class MorphPredictor(PreProcesser):
@@ -333,7 +207,106 @@ class MorphPredictor(PreProcesser):
         
     def transform_item(self, x):
         return [self.transform_sent(sent) for sent in x]
-
+    
+class SpaceDetecter(PreProcesser):
+    
+    def transform_sent(self, sent):
+        
+        spaces = []
+        text = sent.text
+        
+        for token in sent.tokens:
+            
+            index = text.find(token.form)
+            spaces.append(bool(index))
+            
+            text = text[index+len(token.form):]
+            
+        spaces = spaces[1:]+[False]
+        
+        for token, space in zip(sent.tokens, spaces):
+            token.space = space
+        
+        return sent
+    
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
+    
+class NER_Correcter(PreProcesser):
+    
+    def join(self, chunks, spaces):
+        return ''.join([chunk + (' ' if space else '') for chunk, space in zip(chunks, spaces)]).strip()
+    
+    def join_forms(self, chunks):
+        return self.join([chunk.form for chunk in chunks], [chunk.space for chunk in chunks])
+    
+    def join_lemmas(self, chunks):
+        return self.join([chunk.lemma for chunk in chunks], [chunk.space for chunk in chunks])
+    
+    def join_chunks(self, chunks):
+        
+        token_id = chunks[0].token_id
+        
+        form = self.join_forms(chunks)
+        lemma = self.join_lemmas(chunks)
+        
+        pos = 'NOUN'
+        ne = chunks[0].ne
+        
+        feats = [token.feats for token in chunks if token.pos == pos]
+        feats = feats[0] if feats else 'Case=Nom|Gender=Masc|Number=Sing'
+        
+        space = chunks[-1].space
+        
+        return Token(token_id, form, lemma=lemma, pos=pos, ne=ne, feats=feats, space=space)
+    
+    def transform_sent(self, sent):
+        
+        chunks = []
+        new_tokens = []
+        
+        for token in sent.tokens:
+            
+            if token.ne[0] == 'B':
+                
+                if chunks:
+                    new_tokens.append(self.join_chunks(chunks))
+                
+                chunks = [token]
+                
+            elif token.ne[0] == 'I':
+                
+                if chunks and (chunks[0].ne[2:] == token.ne[2:]):
+                    chunks.append(token)
+                    
+                else:
+                    
+                    if chunks:
+                        new_tokens.append(self.join_chunks(chunks))
+                        
+                    chunks = []
+                    
+                    token.ne = 'O'
+                    new_tokens.append(token)
+                    
+            else:
+                
+                if chunks:
+                    new_tokens.append(self.join_chunks(chunks))
+                        
+                chunks = []
+                
+                new_tokens.append(token)
+                
+        if chunks:
+            new_tokens.append(self.join_chunks(chunks))
+        
+        sent.tokens = new_tokens
+        return sent
+    
+    def transform_item(self, x):
+        return [self.transform_sent(sent) for sent in x]
+    
 class MorphFilter(PreProcesser):
     
     def __init__(self, pos_set=None):

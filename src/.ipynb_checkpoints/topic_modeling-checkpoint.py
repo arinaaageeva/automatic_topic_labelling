@@ -42,7 +42,7 @@ class TopicModeling(BaseEstimator, ClusterMixin):
         return self
         
     def predict(self, X):
-        return sefl.model.transform(X).T.idxmax(axis=1)
+        return self.model.transform(X).T.idxmax(axis=1)
     
 def get_metrics(labels_true, labels_pred):
     

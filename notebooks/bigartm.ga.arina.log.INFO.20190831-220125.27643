@@ -1,0 +1,4 @@
+Log file created at: 2019/08/31 22:01:25
+Running on machine: ga
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0831 22:01:25.386862 27643 c_interface.cc:127] Logging enabled to .

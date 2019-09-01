@@ -1,0 +1,15 @@
+Log file created at: 2019/09/01 16:32:58
+Running on machine: ga
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+W0901 16:32:58.960302  5508 helpers.cc:221] File already exists: ../data/interim/batches/aaaaal.batch
+W0901 16:32:59.007120  5499 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaa.batch
+W0901 16:32:59.024416  5506 helpers.cc:221] File already exists: ../data/interim/batches/aaaaah.batch
+W0901 16:32:59.037010  5504 helpers.cc:221] File already exists: ../data/interim/batches/aaaaag.batch
+W0901 16:32:59.046561  5500 helpers.cc:221] File already exists: ../data/interim/batches/aaaaab.batch
+W0901 16:32:59.056830  5503 helpers.cc:221] File already exists: ../data/interim/batches/aaaaai.batch
+W0901 16:32:59.068404  5502 helpers.cc:221] File already exists: ../data/interim/batches/aaaaae.batch
+W0901 16:32:59.078155  5501 helpers.cc:221] File already exists: ../data/interim/batches/aaaaac.batch
+W0901 16:32:59.090574  5510 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaj.batch
+W0901 16:32:59.101521  5507 helpers.cc:221] File already exists: ../data/interim/batches/aaaaak.batch
+W0901 16:32:59.113293  5509 helpers.cc:221] File already exists: ../data/interim/batches/aaaaaf.batch
+W0901 16:32:59.124940  5505 helpers.cc:221] File already exists: ../data/interim/batches/aaaaad.batch
