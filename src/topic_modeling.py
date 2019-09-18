@@ -10,7 +10,7 @@ class TopicModeling(BaseEstimator, ClusterMixin):
         
         self.num_collection_passes = num_collection_passes
         
-        topic_names = [f'topic_{index}' for index in range(num_topics)]
+        topic_names = ['topic_%s'%index for index in range(num_topics)]
         self.model = artm.ARTM(topic_names=topic_names+['background'], 
                                dictionary=dictionary, class_ids=class_ids,
                                cache_theta = True, theta_columns_naming='title')
@@ -27,6 +27,12 @@ class TopicModeling(BaseEstimator, ClusterMixin):
         #sparse phi
         self.model.regularizers.add(artm.SmoothSparsePhiRegularizer(name='sparse_phi',
                                                                     tau=-sparse_phi_tau, gamma=0,
+                                                                    class_ids=['text', 'title'],
+                                                                    topic_names=topic_names))
+        #sparse level_0 phi
+        self.model.regularizers.add(artm.SmoothSparsePhiRegularizer(name='sparse_level_phi',
+                                                                    tau=-sparse_label_tau, gamma=0,
+                                                                    class_ids=['level_0'],
                                                                     topic_names=topic_names))
         
         #decorrelator phi
@@ -40,7 +46,73 @@ class TopicModeling(BaseEstimator, ClusterMixin):
         
     def predict(self, X):
         return sefl.model.transform(X).T.idxmax(axis=1)
+
+
+class TopicHierarchicalModeling(BaseEstimator, ClusterMixin):
     
+    def __init__(self, dictionary, num_collection_passes=10, class_ids=None):
+        
+        self.num_collection_passes = num_collection_passes
+        self.model = artm.hARTM(dictionary, class_ids=class_ids)
+        self.dictionary = dictionary
+        
+    def add_level(self, num_topics=3, smooth_background_tau=0, sparse_phi_tau=0, 
+                    decorrelator_phi_tau=0, sparse_label_tau=0):
+
+        topic_names = ['topic_%s'%index for index in range(num_topics)]
+
+        level = self.model.add_level(num_topics=num_topics, topic_names=topic_names+['background'])
+
+        level.initialize(self.dictionary)
+        level.cache_theta = True
+
+        level.scores.add(artm.PerplexityScore(name='perplexity', dictionary=self.dictionary))
+        level.scores.add(artm.TopTokensScore(name='title_top_tokens', class_id='title', num_tokens=100))
+        level.scores.add(artm.TopTokensScore(name='text_top_tokens', class_id='text', num_tokens=100))
+        
+        #smooth background
+        level.regularizers.add(artm.SmoothSparsePhiRegularizer(name='smooth_background', 
+                                                               tau=smooth_background_tau, gamma=0,
+                                                               topic_names=['background']))
+        
+        #sparse phi
+        level.regularizers.add(artm.SmoothSparsePhiRegularizer(name='sparse_phi',
+                                                               tau=-sparse_phi_tau, gamma=0,
+                                                               class_ids=['text', 'title'],
+                                                               topic_names=topic_names))
+        #sparse level_0 phi
+        level.regularizers.add(artm.SmoothSparsePhiRegularizer(name='sparse_level_phi',
+                                                               tau=-sparse_label_tau, gamma=0,
+                                                               class_ids=['level_0'],
+                                                               topic_names=topic_names))
+        
+        #decorrelator phi
+        level.regularizers.add(artm.DecorrelatorPhiRegularizer(name='decorrelator_phi',
+                                                               tau=decorrelator_phi_tau, gamma=0))
+
+        level.regularizers.add(artm.DecorrelatorPhiRegularizer(name='decorrelator_level_phi',
+                                                               tau=decorrelator_phi_tau, 
+                                                               class_ids=['level_0'],
+                                                               gamma=0))
+
+    def del_level(self, level_idx):
+        self.model.del_level(level_idx)
+        
+    def fit(self, level_idx, X, y=None):
+        level = self.model.get_level(level_idx)
+        level.fit_offline(X, num_collection_passes=self.num_collection_passes)
+        self.labels_ = level.get_theta().T.idxmax(axis=1)
+        return self
+        
+    def predict(self, level_idx, X):
+        level = sefl.model.get_level(level_idx)
+        return level.transform(X).T.idxmax(axis=1)
+
+    def fit_predict(self, level_idx, X, y=None):
+        self.fit(level_idx, X)
+        return self.labels_
+    
+
 def get_metrics(labels_true, labels_pred):
     
     labels_true = labels_true.set_index('id')
@@ -63,7 +135,7 @@ def print_metrics(labels_true, labels_pred):
     metric_scores = get_metrics(labels_true, labels_pred)
     
     for name, score in zip(metric_names, metric_scores):
-        print(f'{name} {score}\n')
+        print('%s %s\n'%(name, score))
     
 def get_background_articles(articles, labels_pred):
     
@@ -76,9 +148,9 @@ def print_background_articles(articles, labels_pred):
     
     result = ''
     for level_0, group in background_articles.groupby('hr_level_0'):
-        result += f'LEVEL 0: {level_0}\n\n'
+        result += 'LEVEL 0: %s\n\n'%level_0
         for title in group.title.values:
-            result += f'{title}\n'
+            result += '%s\n'%title
         result += '\n'
         
     return result
