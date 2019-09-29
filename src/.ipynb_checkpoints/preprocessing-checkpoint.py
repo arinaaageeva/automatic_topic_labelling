@@ -310,22 +310,7 @@ class MorphPredictor(PreProcesser):
         return sent
         
     def transform_item(self, x):
-        return [self.transform_sent(sent) for sent in x]
-
-#class MorphFilter(PreProcesser):
-    
-#    def __init__(self, upos_set=None):
-#        self.upos_set = set() if upos_set is None else upos_set
-    
-#    def transform_sent(self, sent):
-        
-#        sent = sent.copy()
-        
-#        sent.tokens = [token for token in sent.tokens if token.pos in self.upos_set]
-#        return sent
-    
-#    def transform_item(self, x):
-#        return [self.transform_sent(sent) for sent in x]    
+        return [self.transform_sent(sent) for sent in x] 
     
 #https://ufal.mff.cuni.cz/udpipe    
 class SyntaxParser(PreProcesser):
@@ -638,31 +623,37 @@ class  CoNLLUFormatDecoder(PreProcesser):
     
 class VowpalWabbitFormatEncoder(PreProcesser):
     
-    def __init__(self, suffix='', upos_filt=False, upos_set=None, split_ner=False):
+    def __init__(self, suffix='', upos_set=None, get_token_form=None, split_modalities=False, get_modality=None, rename_modalities=None):
         
         self.suffix = suffix
         self.upos_set = upos_set
-        self.split_ner = split_ner
+        self.get_token_form = get_token_form
+        self.split_modalities = split_modalities
+        self.get_modality = get_modality
+        self.rename_modalities = rename_modalities
         
-        self.upos_filt = False if self.upos_set is None else upos_filt
-    
     def transform_modality(self, modality):
         return ' '.join([token.replace(':', '') + ('' if count == 1 else f':{count}') for token, count in Counter(modality).items()])
     
     def transform_item(self, x):
         
-        tokens = list(chain(*[sent.tokens for sent in x]))
+        tokens = chain(*[sent.tokens for sent in x])
         
-        if self.upos_filt:
-            tokens = list(filter(lambda x: x.upos in self.upos_set, tokens))
+        if self.upos_set is not None:
+            tokens = filter(lambda x: x.upos in self.upos_set, tokens)
         
         modalities = {}
-        if self.split_ner:
-            modalities['tokens'] = [token.lemma for token in tokens if token.ner == 'O']
-            modalities['pers'] = [token.lemma.replace(' ', '_') for token in tokens if token.ner[2:] == 'PER']
-            modalities['orgs'] = [token.lemma.replace(' ', '_') for token in tokens if token.ner[2:] == 'ORG']
-            modalities['locs'] = [token.lemma.replace(' ', '_') for token in tokens if token.ner[2:] == 'LOC']
+        if self.split_modalities:
+            for token in tokens:
+                token_modality = self.get_modality(token)
+                modalities.setdefault(token_modality, [])
+                modalities[token_modality].append(self.get_token_form(token))
+        
         else:
-            modalities['tokens'] = [token.lemma for token in tokens]
+            modalities['tokens'] = [self.get_token_form(token) for token in tokens]
+            
+        if self.rename_modalities is not None:
+            for old_name, new_name in self.rename_modalities.items():
+                modalities[new_name] = modalities.pop(old_name) if old_name in modalities else []
         
         return ' '.join([f'|{self.suffix}{name} {self.transform_modality(modality)}' for name, modality in modalities.items()])
